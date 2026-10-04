@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" data-page-node-id="WbmKnBeY39oT009VV8E1L8">
+<head data-page-node-id="U0Svsvv8zqAROR4GwtzF72">
+<meta charset="UTF-8" data-page-node-id="ssjcBf5iH2Qf1XiENa7a8O">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" data-page-node-id="zrHnSdtFRa5ZDqzsq0shCN">
+<title>IMA Tennis Queue</title>
+<style>
+  :root {
+    --uw-purple: #4b2e83;
+    --uw-purple-dark: #372260;
+    --uw-purple-light: #ece7f5;
+    --gold: #b7a57a;
+    --bg: #f4f4f6;
+    --card: #ffffff;
+    --green: #1e9e50;
+    --green-bg: #e6f6ec;
+    --red: #d4393c;
+    --red-bg: #fdeaea;
+    --text: #23213a;
+    --muted: #6b6a7d;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    background: linear-gradient(135deg, var(--uw-purple), var(--uw-purple-dark));
+    color: #fff;
+    padding: 22px 16px 16px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: .2px; }
+  header p { font-size: .85rem; opacity: .85; margin-top: 3px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    background: var(--card);
+    border-bottom: 1px solid #e3e1ea;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .tab {
+    flex: 1;
+    padding: 13px 0;
+    text-align: center;
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+  }
+  .tab.active { color: var(--uw-purple); border-bottom-color: var(--uw-purple); }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 16px 14px 90px; }
+  .hidden { display: none !important; }
+
+  /* ---------- Personal status banner ---------- */
+  .my-status {
+    background: var(--uw-purple-light);
+    border: 1.5px solid var(--uw-purple);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .my-status .line1 { font-weight: 800; color: var(--uw-purple); font-size: 1.05rem; }
+  .my-status .line2 { color: var(--muted); font-size: .88rem; margin-top: 2px; }
+  .my-status .called {
+    display: inline-block;
+    background: var(--green); color: #fff; font-weight: 700;
+    border-radius: 999px; padding: 4px 12px; font-size: .85rem; margin-top: 6px;
+  }
+  .btn-leave {
+    margin-top: 10px;
+    background: #fff;
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: .9rem;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* ---------- Join button ---------- */
+  .btn-join {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--uw-purple), var(--uw-purple-dark));
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 14px rgba(75,46,131,.35);
+    min-height: 56px;
+  }
+  .btn-join:active { transform: scale(.98); }
+
+  /* ---------- Sections ---------- */
+  .section-title {
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin: 22px 2px 10px;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Queue ---------- */
+  .queue-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    overflow: hidden;
+  }
+  .q-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid #efedf3;
+  }
+  .q-row:last-child { border-bottom: none; }
+  .q-row.me { background: var(--uw-purple-light); }
+  .q-pos {
+    font-weight: 800;
+    color: var(--uw-purple);
+    min-width: 34px;
+    font-size: 1.05rem;
+  }
+  .q-info { flex: 1; min-width: 0; }
+  .q-name { font-weight: 700; font-size: .98rem; }
+  .q-meta { font-size: .8rem; color: var(--muted); }
+  .badge-next {
+    background: var(--green);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .badge-called {
+    background: var(--uw-purple);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 26px 16px;
+    font-size: .92rem;
+  }
+
+  /* ---------- Courts grid ---------- */
+  .courts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .court {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    border-top: 4px solid var(--green);
+  }
+  .court.occupied { border-top-color: var(--red); }
+  .court-name { font-weight: 800; font-size: .95rem; margin-bottom: 6px; }
+  .court-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .court.available .court-status { background: var(--green-bg); color: var(--green); }
+  .court.occupied .court-status { background: var(--red-bg); color: var(--red); }
+  .court-detail { font-size: .82rem; color: var(--muted); margin-top: 8px; min-height: 18px; }
+  .court-timer {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--red);
+    margin-top: 4px;
+  }
+  .court-timer.low { animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: .45; } }
+
+  .court .staff-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: .88rem;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .btn-assign { background: var(--uw-purple); color: #fff; }
+  .btn-assign:disabled { background: #c9c5d6; cursor: not-allowed; }
+  .btn-end { background: var(--red); color: #fff; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,12,40,.55);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    padding: 0;
+  }
+  .modal {
+    background: var(--card);
+    width: 100%;
+    max-width: 440px;
+    border-radius: 20px 20px 0 0;
+    padding: 22px 20px calc(20px + env(safe-area-inset-bottom));
+    animation: slideUp .22s ease-out;
+  }
+  @media (min-width: 520px) {
+    .modal-overlay { align-items: center; padding: 20px; }
+    .modal { border-radius: 20px; }
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } }
+  .modal h2 { font-size: 1.2rem; margin-bottom: 16px; color: var(--uw-purple); }
+  .field-label { font-size: .82rem; font-weight: 700; color: var(--muted); margin: 14px 0 6px; }
+  .modal input[type="text"] {
+    width: 100%;
+    padding: 13px 14px;
+    font-size: 1rem;
+    border: 1.5px solid #d8d5e2;
+    border-radius: 10px;
+    outline: none;
+  }
+  .modal input[type="text"]:focus { border-color: var(--uw-purple); }
+  .seg {
+    display: flex;
+    gap: 8px;
+  }
+  .seg button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid #d8d5e2;
+    background: #fff;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    color: var(--muted);
+    min-height: 48px;
+  }
+  .seg button.selected {
+    border-color: var(--uw-purple);
+    background: var(--uw-purple-light);
+    color: var(--uw-purple);
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .modal-actions button {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    min-height: 52px;
+    border: none;
+  }
+  .btn-modal-join { background: var(--uw-purple); color: #fff; }
+  .btn-modal-cancel { background: #eeecf3; color: var(--text); }
+
+  /* ---------- Toast ---------- */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: all .3s ease;
+    z-index: 200;
+    max-width: 90vw;
+    text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  .hint {
+    text-align: center;
+    color: var(--muted);
+    font-size: .8rem;
+    margin-top: 26px;
+  }
+</style>
+</head>
+<body data-page-node-id="JQCKyAtWNAun3h87GYNXDM">
+
+<header data-page-node-id="HEUCjGgdFgqRhZMpgPazCz">
+  <h1 data-page-node-id="Ikt8e1SngIRmMZ7A2tu8TN">🎾 IMA Tennis Queue</h1>
+  <p data-page-node-id="CqFYqv78JxqFAvACgelLSb">First-come, first-served court management</p>
+</header>
+
+<div class="tabs" data-page-node-id="f3PySZUC1Dv9vYcCYwAgS1">
+  <button class="tab active" id="tab-student" onclick="switchView('student')" data-page-node-id="17BeV2f4CazSeD5YKFdqNx">Student View</button>
+  <button class="tab" id="tab-staff" onclick="switchView('staff')" data-page-node-id="7qwncgmzzPECMVi9VCnKIM">Staff View</button>
+</div>
+
+<!-- ================= STUDENT VIEW ================= -->
+<div class="wrap" id="view-student" data-page-node-id="0Bi0KlGDtBSrEk3gHoCLyq">
+
+  <div id="my-status-container" data-page-node-id="PMDbdxxyryMGEpmVAgDhKX"></div>
+
+  <button class="btn-join" id="btn-join-main" onclick="openJoinModal()" data-page-node-id="NeC6DgtNY0wxQZt33ykfcD">+ Join the Queue</button>
+
+  <div class="section-title" data-page-node-id="bn4Ad5U36tEqGRvyY2Rp9j">Waiting Queue</div>
+  <div class="queue-card" id="student-queue" data-page-node-id="HZsNIjFyzJWPOEkAYpMqMz"></div>
+
+  <div class="section-title" data-page-node-id="DIkaHn0yEGB3VY6sFVzBab">Courts</div>
+  <div class="courts" id="student-courts" data-page-node-id="4c88XF7QwynI0HTnUarfm8"></div>
+
+  <p class="hint" data-page-node-id="mGT4CHKGmX3An6RzHw2wCK">Prototype v1 · When players are waiting, court sessions are limited to 75 minutes.</p>
+</div>
+
+<!-- ================= STAFF VIEW ================= -->
+<div class="wrap hidden" id="view-staff" data-page-node-id="ExN9OJQ4fDPkucyqKktVO6">
+
+  <div class="section-title" data-page-node-id="qweRw3RNPPFAldfVnQPdof">Waiting Queue</div>
+  <div class="queue-card" id="staff-queue" data-page-node-id="RIN9jvCWYA1J3OKwrgAhcF"></div>
+
+  <div class="section-title" data-page-node-id="tHcfltSp0jI2WUHWBJDCFX">Court Management</div>
+  <div class="courts" id="staff-courts" data-page-node-id="fZB6YjiRe4xrkltfs9RrzC"></div>
+
+  <p class="hint" data-page-node-id="cfgDObm5FjO9dqRSYae2v9">Staff prototype — no authentication in V1. "Assign Next" always takes the first group in the queue.</p>
+</div>
+
+<!-- ================= JOIN MODAL ================= -->
+<div class="modal-overlay hidden" id="join-modal-overlay" data-page-node-id="Igg1kCBxZxbwT2Vx4ydQwn">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="join-title" data-page-node-id="j8RpvKHXRz8f4HUSMyO2jw">
+    <h2 id="join-title" data-page-node-id="GLS6UYjjoaRBpRbdW5mJrX">Join the Queue</h2>
+
+    <div class="field-label" data-page-node-id="YJfY0nFemXwJLaXVTuRH8k">Your name</div>
+    <input type="text" id="input-name" placeholder="e.g. Chris" maxlength="24" autocomplete="off" data-page-node-id="ROnIEyJTw6sKK7EoKfatCC">
+
+    <div class="field-label" data-page-node-id="CZ2JsDTzCKjqMSDPJ27sx9">Format</div>
+    <div class="seg" id="seg-format" data-page-node-id="PjAdE8DeGwOQBXDztPY0KV">
+      <button type="button" data-value="Singles" class="selected" data-page-node-id="5o0ED26VCW27dYbkR7nfdJ">Singles</button>
+      <button type="button" data-value="Doubles" data-page-node-id="bVrsSuR7yGzDSKIPvBtDau">Doubles</button>
+    </div>
+
+    <div class="field-label" data-page-node-id="KGnZUndkThNCGNERidmc7u">Number of players</div>
+    <div class="seg" id="seg-players" data-page-node-id="abetX7NNhOF5oRARemv9tH">
+      <button type="button" data-value="2" class="selected" data-page-node-id="MqoQGa2OWRBdbl4dhIMa6c">2</button>
+      <button type="button" data-value="4" data-page-node-id="Gx62qTQBi7QdneUwGfEpnJ">4</button>
+    </div>
+
+    <div class="modal-actions" data-page-node-id="sqNKI4cxj0OYtMrlnG0xyA">
+      <button type="button" class="btn-modal-cancel" id="btn-cancel" data-page-node-id="pwC60j7hDLkEXhdJhjHbBB">Cancel</button>
+      <button type="button" class="btn-modal-join" id="btn-confirm-join" data-page-node-id="nCq4MCuyiFaM5Xgy4oQesC">Join</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" data-page-node-id="vuxhmQD0jrXhilZsCDnb2F"></div>
+
+<script>
+/* =========================================================
+   IMA Tennis Queue — V1 prototype
+   State is kept in memory. Structure is intentionally split
+   (state / render / actions) so V2 can swap in a real-time
+   backend (e.g. Firebase / WebSocket) without reworking the UI.
+   ========================================================= */
+
+const SESSION_SECONDS = 75 * 60; // 75-minute IMA court policy
+const EST_MIN_PER_GROUP = 20;    // rough per-group wait estimate
+
+const state = {
+  // queue entries: { id, name, format, players, joinedAt }
+  queue: [
+    { id: 'seed-1', name: 'Alex',   format: 'Singles', players: 2, joinedAt: Date.now() - 1000 * 60 * 12 },
+    { id: 'seed-2', name: 'Jordan', format: 'Doubles', players: 4, joinedAt: Date.now() - 1000 * 60 * 7 },
+    { id: 'seed-3', name: 'Sam',    format: 'Singles', players: 2, joinedAt: Date.now() - 1000 * 60 * 2 },
+  ],
+  // 11 courts: { id, status: 'available' | 'occupied', group, endsAt }
+  courts: [],
+  myEntryId: null,   // the queue entry belonging to this visitor (local only in V1)
+  myCalledCourt: null,
+};
+
+// Seed courts: mix of available / occupied
+(function seedCourts() {
+  const occupied = { 2: 42 * 60 + 18, 3: 18 * 60 + 42, 4: 3 * 60 + 15, 7: 55 * 60, 9: 27 * 60 + 30 };
+  const names = { 2: 'Taylor + 1', 3: 'Riley + 3', 4: 'Casey + 1', 7: 'Morgan + 1', 9: 'Jamie + 3' };
+  for (let i = 1; i <= 11; i++) {
+    if (occupied[i] !== undefined) {
+      state.courts.push({
+        id: i,
+        status: 'occupied',
+        group: names[i],
+        endsAt: Date.now() + occupied[i] * 1000,
+      });
+    } else {
+      state.courts.push({ id: i, status: 'available', group: null, endsAt: null });
+    }
+  }
+})();
+
+/* ---------------- helpers ---------------- */
+const $ = (sel) => document.querySelector(sel);
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function fmtCountdown(ms) {
+  const total = Math.max(0, Math.round(ms / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function groupLabel(e) {
+  return e.players > 1 ? esc(e.name) + ' + ' + (e.players - 1) : esc(e.name);
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ---------------- views ---------------- */
+function switchView(which) {
+  const student = which === 'student';
+  $('#view-student').classList.toggle('hidden', !student);
+  $('#view-staff').classList.toggle('hidden', student);
+  $('#tab-student').classList.toggle('active', student);
+  $('#tab-staff').classList.toggle('active', !student);
+}
+
+/* ---------------- modal ---------------- */
+function openJoinModal() {
+  if (state.myEntryId || state.myCalledCourt) {
+    toast('You are already in the queue.');
+    return;
+  }
+  $('#join-modal-overlay').classList.remove('hidden');
+  $('#input-name').value = '';
+  selectSeg('#seg-format', 'Singles');
+  selectSeg('#seg-players', '2');
+  setTimeout(() => $('#input-name').focus(), 60);
+}
+
+function closeJoinModal() {
+  $('#join-modal-overlay').classList.add('hidden');
+}
+
+function selectSeg(containerSel, value) {
+  document.querySelectorAll(containerSel + ' button').forEach(b => {
+    b.classList.toggle('selected', b.dataset.value === String(value));
+  });
+}
+function getSeg(containerSel) {
+  const sel = document.querySelector(containerSel + ' button.selected');
+  return sel ? sel.dataset.value : null;
+}
+
+// Reliable cancel: bind with addEventListener, also allow tapping the dark backdrop
+$('#btn-cancel').addEventListener('click', closeJoinModal);
+$('#join-modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeJoinModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeJoinModal();
+});
+
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    seg.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+$('#btn-confirm-join').addEventListener('click', () => {
+  const name = $('#input-name').value.trim();
+  if (!name) {
+    toast('Please enter your name.');
+    $('#input-name').focus();
+    return;
+  }
+  const format = getSeg('#seg-format');
+  let players = parseInt(getSeg('#seg-players'), 10);
+  // keep format/player-count consistent
+  if (format === 'Singles') players = 2;
+  if (format === 'Doubles') players = 4;
+
+  const entry = {
+    id: 'me-' + Date.now(),
+    name, format, players,
+    joinedAt: Date.now(),
+  };
+  state.queue.push(entry);
+  state.queue.sort((a, b) => a.joinedAt - b.joinedAt);
+  state.myEntryId = entry.id;
+  closeJoinModal();
+  render();
+  toast('You joined the queue. We\'ll show your position here.');
+});
+
+/* ---------------- actions ---------------- */
+function leaveQueue() {
+  if (!state.myEntryId) return;
+  state.queue = state.queue.filter(e => e.id !== state.myEntryId);
+  state.myEntryId = null;
+  render();
+  toast('You left the queue.');
+}
+
+function assignNext(courtId) {
+  const court = state.courts.find(c => c.id === courtId);
+  if (!court || court.status !== 'available') return;
+  if (state.queue.length === 0) {
+    toast('The queue is empty.');
+    return;
+  }
+  const next = state.queue.shift(); // first-come, first-served
+  court.status = 'occupied';
+  court.group = groupLabel(next);
+  court.endsAt = Date.now() + SESSION_SECONDS * 1000;
+
+  if (next.id === state.myEntryId) {
+    state.myEntryId = null;
+    state.myCalledCourt = courtId;
+    toast('🎾 Your group has been called to Court ' + courtId + '!');
+  } else {
+    toast(groupLabel(next) + ' assigned to Court ' + courtId + '.');
+  }
+  render();
+}
+
+function endSession(courtId) {
+  const court = state.courts.find(c => c.id === courtId);
+  if (!court || court.status !== 'occupied') return;
+  court.status = 'available';
+  court.group = null;
+  court.endsAt = null;
+  if (state.myCalledCourt === courtId) state.myCalledCourt = null;
+  render();
+  toast('Court ' + courtId + ' is now available.');
+}
+
+/* ---------------- rendering ---------------- */
+function renderQueue(containerSel, isStaff) {
+  const el = $(containerSel);
+  if (state.queue.length === 0) {
+    el.innerHTML = '<div class="empty-state">No one is waiting right now — courts are first-come, first-served. 🎾</div>';
+    return;
+  }
+  el.innerHTML = state.queue.map((e, i) => {
+    const isMe = e.id === state.myEntryId;
+    const badge = i === 0 ? '<span class="badge-next">NEXT</span>' : '';
+    return `
+      <div class="q-row${isMe ? ' me' : ''}">
+        <div class="q-pos">#${i + 1}</div>
+        <div class="q-info">
+          <div class="q-name">${groupLabel(e)}${isMe ? ' (you)' : ''}</div>
+          <div class="q-meta">${e.format} · ${e.players} players</div>
+        </div>
+        ${badge}
+      </div>`;
+  }).join('');
+}
+
+function renderCourts(containerSel, isStaff) {
+  const el = $(containerSel);
+  el.innerHTML = state.courts.map(c => {
+    let statusHtml, detailHtml = '', btnHtml = '';
+    if (c.status === 'available') {
+      statusHtml = '<span class="court-status">🟢 AVAILABLE</span>';
+      detailHtml = '<div class="court-detail">Ready for the next group</div>';
+      if (isStaff) {
+        const disabled = state.queue.length === 0 ? 'disabled' : '';
+        btnHtml = `<button class="staff-btn btn-assign" ${disabled} onclick="assignNext(${c.id})">Assign Next</button>`;
+      }
+    } else {
+      const remaining = c.endsAt - Date.now();
+      const low = remaining < 5 * 60 * 1000;
+      statusHtml = '<span class="court-status">🔴 PLAYING</span>';
+      detailHtml = `
+        <div class="court-detail">${esc(c.group)}</div>
+        <div class="court-timer${low ? ' low' : ''}" data-ends="${c.endsAt}">${fmtCountdown(remaining)}</div>
+        <div class="court-detail">remaining</div>`;
+      if (isStaff) {
+        btnHtml = `<button class="staff-btn btn-end" onclick="endSession(${c.id})">End Session</button>`;
+      }
+    }
+    return `
+      <div class="court ${c.status}">
+        <div class="court-name">Court ${c.id}</div>
+        ${statusHtml}
+        ${detailHtml}
+        ${btnHtml}
+      </div>`;
+  }).join('');
+}
+
+function renderMyStatus() {
+  const box = $('#my-status-container');
+
+  // Called to a court
+  if (state.myCalledCourt) {
+    box.innerHTML = `
+      <div class="my-status">
+        <div class="line1">It's your turn! 🎉</div>
+        <div class="line2">Please head to Court ${state.myCalledCourt}. Enjoy your session.</div>
+        <span class="called">CALLED — Court ${state.myCalledCourt}</span>
+      </div>`;
+    return;
+  }
+
+  const idx = state.queue.findIndex(e => e.id === state.myEntryId);
+  if (idx === -1) { box.innerHTML = ''; return; }
+
+  const est = idx * EST_MIN_PER_GROUP;
+  const estText = idx === 0
+    ? "You're next — a court will open up soon."
+    : `Estimated wait: ~${est} minutes`;
+
+  box.innerHTML = `
+    <div class="my-status">
+      <div class="line1">You are #${idx + 1} in line.</div>
+      <div class="line2">${estText}</div>
+      <button class="btn-leave" onclick="leaveQueue()">Leave Queue</button>
+    </div>`;
+}
+
+function render() {
+  renderQueue('#student-queue', false);
+  renderQueue('#staff-queue', true);
+  renderCourts('#student-courts', false);
+  renderCourts('#staff-courts', true);
+  renderMyStatus();
+}
+
+/* ---------------- live countdown (every second) ---------------- */
+setInterval(() => {
+  let changed = false;
+  const now = Date.now();
+  state.courts.forEach(c => {
+    if (c.status === 'occupied' && c.endsAt && c.endsAt <= now) {
+      // Session naturally expired — free the court (V2 would notify players first)
+      c.status = 'available';
+      c.group = null;
+      c.endsAt = null;
+      if (state.myCalledCourt === c.id) state.myCalledCourt = null;
+      changed = true;
+    }
+  });
+  if (changed) { render(); return; }
+
+  // In-place timer updates to avoid re-rendering the whole grid every second
+  document.querySelectorAll('.court-timer').forEach(t => {
+    const ends = parseInt(t.dataset.ends, 10);
+    const remaining = ends - now;
+    t.textContent = fmtCountdown(remaining);
+    t.classList.toggle('low', remaining < 5 * 60 * 1000);
+  });
+}, 1000);
+
+render();
+</script>
+</body>
+</html>
